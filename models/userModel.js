@@ -45,7 +45,7 @@ const userSchema = new mongoose.Schema({
    if(!this.isModified('password')) return  next();
 
             //Hashing the password with the cost of 12
-         this.password = await  bcrypt.hash(this.password , 16);
+         this.password = await  bcrypt.hash(this.password , 12);
          this.passwordConfirm = undefined ;
      
   })
