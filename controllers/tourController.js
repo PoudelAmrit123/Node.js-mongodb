@@ -11,6 +11,7 @@ exports.aliasTopTours  = (req , res , next)=>{
   next();
   
 }
+
 //Here we are using alias Top Tours as an middleWAre where we specifies our route in  the tourroutes file and in get request we first pass the middleware where all are preequiest such as limit sort fields are defined before passing it down to the getAllTours method where we donot have to specifies differently 
 
 

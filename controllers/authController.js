@@ -3,6 +3,7 @@ const User = require("../models/userModel");
 const catchAsync = require("../utils/catchAsync");
 const jwt = require("jsonwebtoken");
 const AppError = require("../utils/appError");
+const { exists } = require("../models/userModel");
 
  const signToken = id =>{
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -72,4 +73,34 @@ exports.signup = catchAsync(async (req, res, next) => {
 
 
 
+
+
    });
+
+
+   exports.protect = catchAsync( async (req , res , next)=>{
+
+    // 1)Getting token and check if it is true 
+       
+    //  We have access to the header in the header in the req 
+    let token ;
+    if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
+           token = req.headers.authorization.split(' ')[1];
+           
+    }
+    console.log(token);
+   
+         if(!token){
+          return next( new AppError('You need to login First to Access the function'  , 401))
+         }
+
+
+      // 2)Verfication token 
+
+      // 3)Check if user still exists 
+
+      // 4)Check if user changed password after token was issued 
+
+
+    next();
+   })
