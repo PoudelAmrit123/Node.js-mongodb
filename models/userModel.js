@@ -36,7 +36,9 @@ const userSchema = new mongoose.Schema({
 
         }
 
-    }
+    },
+
+    passwordChangedAt : Date ,
 
 });
 
@@ -55,6 +57,17 @@ const userSchema = new mongoose.Schema({
      
     return   await bcrypt.compare(candidatePassword , userPassword);
 
+   }
+
+   userSchema.methods.changePasswordAfter = function(JWTTimestamp){
+    if(this.passwordChangedAt ){
+         const changedTimeStamp = parseInt(this.passwordChangedAt.getTime()/1000 , 10) ;
+  
+        // console.log(this.passwordCreatedAt , JWTTimestamp);
+        return JWTTimestamp < changedTimeStamp ;
+    }
+     //False Means Not chagned
+    return false ;
    }
 
 
