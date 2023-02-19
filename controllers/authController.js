@@ -93,20 +93,39 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // 3)Check if user still exists
 
-  const freshUser = await User.findById(decoded.id);
-  if (!freshUser) {
+  const currentUser = await User.findById(decoded.id);
+  if (!currentUser) {
     next(new AppError("User Doesnot exits anyMore", 401));
   }
 
   // 4)Check if user changed password after token was issued
 
-  if(freshUser.changePasswordAfter(decoded.iat)){
+  if(currentUser.changePasswordAfter(decoded.iat)){
     next( new AppError('Password have been changed Recently' ,401));
   };
 
-      req.user = freshUser ;
+      req.user = currentUser ;
+
   //Now Grant Access to the Protected Data
   next();
 });
+
+  //here we write our middleware function in wrapper bcz  we have argument i.e roles to be passed on middleware and we cannot do it directly 
+exports.restrictTo =   (...roles)=>{
+  return ( req , res , next)=>{
+
+    //Checking if the user is admin or tour-guide and access the funtion then
+  if(!roles.includes(req.user.role)){
+    return next( new AppError('You donot have permission to perform this action Contact Admin' , 403));
+  };
+
+  next();
+
+  }
+}
+
+
+
+
 
 
