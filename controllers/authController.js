@@ -4,7 +4,9 @@ const User = require("../models/userModel");
 const catchAsync = require("../utils/catchAsync");
 const jwt = require("jsonwebtoken");
 const AppError = require("../utils/appError");
+const sendEmail = require("../utils/email");
 const { exists } = require("../models/userModel");
+
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -133,13 +135,46 @@ exports.forgetPassword =  catchAsync(  async (req , res , next)=>{
       return next( new AppError('User email is not found on database ' , 404));
      }
     // 2) Create unique token for password reset 
-      const restToken =    user.createPasswordRestToken();
+      const resetToken =    user.createPasswordRestToken();
+
+      console.log(resetToken);
            await  user.save({ validateBeforeSave : false} );
   
     // 3) Send the token to the user 
+         
+     const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}` ;
+       
+      const message = `Forget you password .Reset here ${resetUrl} .If not plz ignore this message!` ;
+
+        try{
+
+          await sendEmail({
+            email : user.email ,
+            subject: "Your reset password token (valid for 10min)",
+            message ,
+          });
+    
+          res.status(200).json({
+            status : 'success' , 
+            message : 'Reset Password Token Creatd ',
+          })
     
 
+        }catch(err){
+
+          this.reset
+          this.passwordResetToken = undefined , 
+          this.passwordResetExpires = undefined , 
+          await  user.save({ validateBeforeSave : false} )
+
+        }
+    
+
+     
+
+  
 });
+
 
 
 exports.resetPassword = (req , res , next)=>{}
