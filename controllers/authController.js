@@ -127,9 +127,12 @@ exports.restrictTo = (...roles) => {
   };
 };
 
+
+
 exports.forgetPassword = catchAsync(async (req, res, next) => {
   // 1) Get the user based on enterd email
-
+           console.log(req.body);
+  // const user = await User.findOne({ email: req.body.email });
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
     return next(new AppError("User email is not found on database ", 404));
@@ -158,6 +161,7 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
     res.status(200).json({
       status: "success",
       message: "Reset Password Token Creatd ",
+      token ,
     });
   } catch (err) {
   
@@ -202,10 +206,9 @@ exports.resetPassword =  catchAsync( async (req, res, next) => {
 
 
 
-  // 3) And update the passwordChangedAt property to current date 
+  // 3) And update the passwordChangedAt property to current date          
+    // changePasswordAfter
 
-
-  // changePasswordAfter
 
     //  4)Log the user in and send jwt 
 
@@ -220,6 +223,42 @@ exports.resetPassword =  catchAsync( async (req, res, next) => {
 
 
 });
+
+
+exports.updatePassword = catchAsync(async (req , res, next)=>{
+
+      // 1) get the user from the collection 
+             const user = await  User.findById(req.user.id).select('+password');
+
+      // 2) Check if posted current password is correct 
+
+       if(! await  user.correctPassword(req.body.passwordCurrent , user.password)){
+        return next( new AppError('The password is not Correct' , 401));
+       }
+
+      // 3) If so update the password 
+       user.password = req.body.password ; 
+       user.passwordConfirm = req.body.passwordConfirm ;
+       user.save();
+
+      // 4) log the user in and create JWT 
+      const token = signToken(user._id);
+
+      res.status(200).json({
+        status: "success",
+        token,
+        data: {
+          User
+        },
+      });
+
+}
+
+
+
+)
+
+
 
 
 
