@@ -14,6 +14,32 @@ const signToken = (id) => {
   });
 };
 
+
+ const createSendToken = (user , statusCode , res)=>{
+
+
+
+
+  const token = signToken(user._id);
+   const cookiesOptions = {
+    expires :  new Date(
+      Date.now()  + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000 
+    ),
+    httpOnly : true ,
+    secure : true , 
+  };
+  if(process.env.NODE_ENV==='production') cookiesOptions.secure = true ;
+  res.cookies('jwt' , token , cookiesOptions);
+
+  res.status(statusCode).json({
+    status: "success",
+    token,
+    data: {
+      user ,
+    },
+  });
+ }
+
 exports.signup = catchAsync(async (req, res, next) => {
   // const newUser = await User.create(req.body);
   const newUser = await User.create({
@@ -27,15 +53,16 @@ exports.signup = catchAsync(async (req, res, next) => {
   //   const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
   //     expiresIn: process.env.JWT_EXPIRES_IN,
   //   });
-  const token = signToken(newUser._id);
+   createSendToken(newUser , 201 , res);
+  // const token = signToken(newUser._id);
 
-  res.status(201).json({
-    status: "success",
-    token,
-    data: {
-      User: newUser,
-    },
-  });
+  // res.status(201).json({
+  //   status: "success",
+  //   token,
+  //   data: {
+  //     User: newUser,
+  //   },
+  // });
 });
 
 //Login
@@ -60,12 +87,12 @@ exports.login = catchAsync(async (req, res, next) => {
   }
 
   //  3) send back the token
-
-  const token = signToken(user._id);
-  res.status(200).json({
-    status: "success",
-    token,
-  });
+  createSendToken(user , 200 , res);
+  // const token = signToken(user._id);
+  // res.status(200).json({
+  //   status: "success",
+  //   token,
+  // });
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -211,14 +238,14 @@ exports.resetPassword =  catchAsync( async (req, res, next) => {
 
 
     //  4)Log the user in and send jwt 
+    createSendToken(newUser , 200 , res);
+    // const token = signToken(newUser._id);
 
-    const token = signToken(newUser._id);
-
-    res.status(200).json({
-      status: "success",
-      token,
+    // res.status(200).json({
+    //   status: "success",
+    //   token,
        
-    });
+    // });
 
 
 
@@ -242,15 +269,16 @@ exports.updatePassword = catchAsync(async (req , res, next)=>{
        user.save();
 
       // 4) log the user in and create JWT 
-      const token = signToken(user._id);
+      createSendToken(user , 200 , res);
+      // const token = signToken(user._id);
 
-      res.status(200).json({
-        status: "success",
-        token,
-        data: {
-          User
-        },
-      });
+      // res.status(200).json({
+      //   status: "success",
+      //   token,
+      //   data: {
+      //     User
+      //   },
+      // });
 
 }
 
