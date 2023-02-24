@@ -48,7 +48,13 @@ const userSchema = new mongoose.Schema({
 
     passwordChangedAt : Date ,
     passwordResetToken : String , 
-    passwordResetExpires : Date , 
+    passwordResetExpires : Date ,
+    
+    active : {
+        type : Boolean ,
+        select : false , 
+        default : true ,
+    }
 
 });
 
@@ -89,6 +95,14 @@ const userSchema = new mongoose.Schema({
      //False Means Not chagned
     return false ;
    }
+
+
+ userSchema.pre(/^find/ , function(next){
+        // 1)We run this middleware function to display the user only having active status as true  
+        this.find({ active : true});
+        next();
+ });
+ 
 
 
    userSchema.methods.createPasswordRestToken = function (){
