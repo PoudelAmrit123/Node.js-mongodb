@@ -17,19 +17,18 @@ const signToken = (id) => {
 
  const createSendToken = (user , statusCode , res)=>{
 
-
-
-
   const token = signToken(user._id);
-   const cookiesOptions = {
-    expires :  new Date(
-      Date.now()  + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000 
-    ),
-    httpOnly : true ,
-    secure : true , 
-  };
-  if(process.env.NODE_ENV==='production') cookiesOptions.secure = true ;
-  res.cookies('jwt' , token , cookiesOptions);
+
+//   const expiresInDays = process.env.JWT_COOKIE_EXPIRES_IN || 7;
+// const cookiesOptions = {
+//   expires: new Date(Date.now() + expiresInDays * 24 * 60 * 60 * 1000),
+//   httpOnly: true,
+// };
+
+
+  // if(process.env.NODE_ENV==='production') cookiesOptions.secure = true ;
+  
+  res.cookie('jwt' , token );
 
   res.status(statusCode).json({
     status: "success",
@@ -39,6 +38,9 @@ const signToken = (id) => {
     },
   });
  }
+
+
+ 
 
 exports.signup = catchAsync(async (req, res, next) => {
   // const newUser = await User.create(req.body);
