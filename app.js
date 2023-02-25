@@ -6,6 +6,8 @@ const userRouter = require('./routes/userRoutes');
 
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const mongoSantize  = require('express-mongo-sanitize');
+const xss = require('xss-clean');
 
 
 
@@ -26,6 +28,12 @@ if (process.env.NODE_ENV === 'development') {
 
 app.use('/api' ,limiter)
 app.use(express.json());
+
+//  1) Data sanitization Against NoSql query Injection 
+ app.use(mongoSantize())
+  // 2) Data Sanitization Against XSS 
+   app.use(xss());
+
 app.use(express.static(`${__dirname}/public`));
 
 app.use((req, res, next) => {
