@@ -105,31 +105,36 @@ const tourSchema = new mongoose.Schema({
 
      }
 ,
-
-startLocation : {
+         startLocations : [{
            type : { 
                type : String ,
-               default  : 'point',
+               default  : 'Point',
                // enum : ['point'],
             },
             coordinates : [Number],
             address : String ,
             description : String ,
-     } , 
+     }] , 
 
    locations : [{
       type : {
          type : String ,
-         default:'point',
-         enum:['point'],
+         default:'Point',
+
+         // enum:['point'],
       },
+      description : String ,
       coordinates : [Number],
       address : String ,
-      description : String ,
       day : Number ,
-      
 
-     }]
+
+     }],
+
+     guides : [{
+              type : mongoose.Schema.ObjectId ,
+              ref : 'User',
+     }],
 
 
   } ,
