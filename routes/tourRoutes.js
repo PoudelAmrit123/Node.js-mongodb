@@ -1,11 +1,16 @@
 const express = require("express");
 const tourController = require("./../controllers/tourController");
 const authController = require("../controllers/authController");
-const reviewController = require("../controllers/reviewController");
+const reviewRouter = require("./../routes/reviewRoutes");
+// const reviewController = require("../controllers/reviewController");
+
 
 const router = express.Router();
 
 // router.param('id', tourController.checkID);
+
+//Merge Route
+router.use('/:tourId/reviews' , reviewRouter);
 
 router
   .route("/top-5-cheap")
@@ -36,12 +41,14 @@ router
 
 //Nested Loop so that we can use the review directly from the login user rather than passing the both tour id and user id while writing the review
 
-router
-  .route("/:tourId/reviews")
-  .post(
-    authController.protect,
-    authController.restrictTo("user"),
-    reviewController.createReview
-  );
+// router
+//   .route("/:tourId/reviews")
+//   .post(
+//     authController.protect,
+//     authController.restrictTo("user"),
+//     reviewController.createReview
+//   );
+
+//  Instead of using this we can use the advanced express feature called merge parameter 
 
 module.exports = router;
