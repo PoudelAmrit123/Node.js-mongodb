@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mynode-app
+spec:
+  selector:
+    matchLabels:
+      app: mynode-app
+  template:
+    metadata:
+      labels:
+        app: mynode-app
+    spec:
+      containers:
+      - name: mynode-app
+        image: amritpoudel/mynodejs-app
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
